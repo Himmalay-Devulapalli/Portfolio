@@ -40,71 +40,66 @@ export default function HeroNewsletter() {
   const words = newsletter.name.split(" ");
 
   return (
-    <>
-      {/* Mobile-only — floats near the top bar, decoupled from the bottom-aligned text below,
-          so the gap stays small and consistent regardless of viewport height. */}
-      <div className="absolute inset-x-6 top-4 h-56 sm:h-72 lg:hidden">
+    // Mobile: a top-packed flex column (flex-1 fills the slide so the parent's
+    // bottom-anchoring doesn't apply here) — cards, then a fixed gap, then text.
+    // Desktop (lg+): unchanged — original grid, text left / showcase right.
+    <div className="flex flex-1 flex-col gap-8 lg:flex-none lg:grid lg:w-full lg:items-end lg:gap-10 lg:grid-cols-[1fr_0.82fr]">
+      {/* Editions + growth — mobile: stacked above the text; desktop: right column */}
+      <div className="h-56 sm:h-72 lg:order-2 lg:h-[calc(100dvh-9rem)]">
         <NewsletterShowcase />
       </div>
 
-      <div className="grid w-full items-end gap-10 lg:grid-cols-[1fr_0.82fr]">
-          {/* Left — copy + CTA (bottom-aligned to match slide 1) */}
-          <div className="flex max-w-2xl flex-col">
-            <In reduce={reduce}>
-              <p className="mb-6 text-sm font-semibold uppercase tracking-[0.2em] text-navy">
-                {newsletter.platform} · {newsletter.cadence}
-              </p>
-            </In>
+      {/* Left — copy + CTA */}
+      <div className="flex max-w-2xl flex-col lg:order-1">
+        <In reduce={reduce}>
+          <p className="mb-6 text-sm font-semibold uppercase tracking-[0.2em] text-navy">
+            {newsletter.platform} · {newsletter.cadence}
+          </p>
+        </In>
 
-            <div className="overflow-hidden">
-              <motion.h2
-                initial={reduce ? { opacity: 0 } : { y: "110%" }}
-                animate={reduce ? { opacity: 1 } : { y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1, ease }}
-                className="font-display font-bold leading-[1.03] tracking-[-0.03em] text-ink"
-                style={{ fontSize: "clamp(2.2rem, 6.2vw, 4.75rem)" }}
-              >
-                {words.map((w, i) => (
-                  <span key={w} className={i === words.length - 1 ? "text-navy" : ""}>
-                    {w}
-                    {i === words.length - 1 ? "." : " "}
-                  </span>
-                ))}
-              </motion.h2>
-            </div>
-
-            <In delay={0.24} reduce={reduce}>
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg">
-                {newsletter.description}
-              </p>
-            </In>
-
-            <In delay={0.32} reduce={reduce}>
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <motion.a
-                  href={newsletter.url}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ duration: 0.12, ease }}
-                  className="inline-flex w-fit items-center justify-center gap-2 rounded-xl bg-navy px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-navy-hover"
-                >
-                  <LinkedIn />
-                  Subscribe on LinkedIn
-                </motion.a>
-                <p className="text-sm text-ink-soft">
-                  <span className="font-semibold text-ink">{newsletter.subscribers}</span>{" "}
-                  subscribers · Published {newsletter.cadence.toLowerCase()}
-                </p>
-              </div>
-            </In>
-          </div>
-
-          {/* Right — impact + editions marquee (desktop, height-bounded to the viewport) */}
-          <div className="hidden h-[calc(100dvh-9rem)] lg:block">
-            <NewsletterShowcase />
-          </div>
+        <div className="overflow-hidden">
+          <motion.h2
+            initial={reduce ? { opacity: 0 } : { y: "110%" }}
+            animate={reduce ? { opacity: 1 } : { y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease }}
+            className="font-display font-bold leading-[1.03] tracking-[-0.03em] text-ink"
+            style={{ fontSize: "clamp(2.2rem, 6.2vw, 4.75rem)" }}
+          >
+            {words.map((w, i) => (
+              <span key={w} className={i === words.length - 1 ? "text-navy" : ""}>
+                {w}
+                {i === words.length - 1 ? "." : " "}
+              </span>
+            ))}
+          </motion.h2>
         </div>
-    </>
+
+        <In delay={0.24} reduce={reduce}>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg">
+            {newsletter.description}
+          </p>
+        </In>
+
+        <In delay={0.32} reduce={reduce}>
+          <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <motion.a
+              href={newsletter.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.12, ease }}
+              className="inline-flex w-fit items-center justify-center gap-2 rounded-xl bg-navy px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-navy-hover"
+            >
+              <LinkedIn />
+              Subscribe on LinkedIn
+            </motion.a>
+            <p className="text-sm text-ink-soft">
+              <span className="font-semibold text-ink">{newsletter.subscribers}</span>{" "}
+              subscribers · Published {newsletter.cadence.toLowerCase()}
+            </p>
+          </div>
+        </In>
+      </div>
+    </div>
   );
 }

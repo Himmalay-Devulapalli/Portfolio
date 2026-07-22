@@ -41,6 +41,11 @@ export default function HeroNewsletter() {
 
   return (
     <div className="grid w-full items-end gap-10 lg:grid-cols-[1fr_0.82fr]">
+      {/* Mobile-only — showcase sits above the text, own bounded height, breathing room via parent gap */}
+      <div className="h-64 sm:h-80 lg:hidden">
+        <NewsletterShowcase />
+      </div>
+
       {/* Left — copy + CTA (bottom-aligned to match slide 1) */}
       <div className="flex max-w-2xl flex-col">
         <In reduce={reduce}>

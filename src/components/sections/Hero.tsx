@@ -118,7 +118,7 @@ export default function Hero() {
         {slides.map((s) => (
           <div
             key={s.id}
-            className="flex h-dvh w-full shrink-0 flex-col justify-end overflow-hidden px-6 pb-8 pt-20 sm:px-14 sm:pb-10 lg:px-20"
+            className="flex h-[calc(100dvh-3.5rem)] w-full shrink-0 flex-col justify-end overflow-hidden px-6 pb-8 pt-20 sm:px-14 sm:pb-10 lg:h-dvh lg:px-20"
           >
             {s.render()}
           </div>

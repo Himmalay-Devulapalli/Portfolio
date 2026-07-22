@@ -40,12 +40,13 @@ export default function HeroNewsletter() {
   const words = newsletter.name.split(" ");
 
   return (
-    // Mobile: a top-packed flex column (flex-1 fills the slide so the parent's
-    // bottom-anchoring doesn't apply here) — cards, then a fixed gap, then text.
+    // Mobile: a flex column that fills the slide (so text lands flush at the
+    // bottom, exactly like the other slides); the cards block grows (flex-1)
+    // to fill whatever space is left above the text — no fixed height, no overlap.
     // Desktop (lg+): unchanged — original grid, text left / showcase right.
     <div className="flex flex-1 flex-col gap-8 lg:flex-none lg:grid lg:w-full lg:items-end lg:gap-10 lg:grid-cols-[1fr_0.82fr]">
-      {/* Editions + growth — mobile: stacked above the text; desktop: right column */}
-      <div className="h-56 sm:h-72 lg:order-2 lg:h-[calc(100dvh-9rem)]">
+      {/* Editions + growth — mobile: grows to fill the gap above the text; desktop: right column */}
+      <div className="flex-1 lg:order-2 lg:flex-none lg:h-[calc(100dvh-9rem)]">
         <NewsletterShowcase />
       </div>
 

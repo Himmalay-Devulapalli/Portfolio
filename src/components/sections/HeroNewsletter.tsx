@@ -43,10 +43,13 @@ export default function HeroNewsletter() {
     // Mobile: a flex column that fills the slide (so text lands flush at the
     // bottom, exactly like the other slides); the cards block grows (flex-1)
     // to fill whatever space is left above the text — no fixed height, no overlap.
+    // `min-h-0` on every flex-1 item is required: flex items default to
+    // min-height:auto, which lets their tall content force the item (and the
+    // whole slide) to grow past min-h-dvh instead of being capped to fill space.
     // Desktop (lg+): unchanged — original grid, text left / showcase right.
-    <div className="flex flex-1 flex-col gap-8 lg:flex-none lg:grid lg:w-full lg:items-end lg:gap-10 lg:grid-cols-[1fr_0.82fr]">
+    <div className="flex min-h-0 flex-1 flex-col gap-8 lg:flex-none lg:grid lg:w-full lg:items-end lg:gap-10 lg:grid-cols-[1fr_0.82fr]">
       {/* Editions + growth — mobile: grows to fill the gap above the text; desktop: right column */}
-      <div className="flex-1 lg:order-2 lg:flex-none lg:h-[calc(100dvh-9rem)]">
+      <div className="min-h-0 flex-1 lg:order-2 lg:h-[calc(100dvh-9rem)] lg:flex-none">
         <NewsletterShowcase />
       </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import HeroStatement from "./HeroStatement";
 import HeroNewsletter from "./HeroNewsletter";
@@ -45,18 +45,23 @@ export default function Hero() {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [hovering, setHovering] = useState(false);
+  // Autoplay fires exactly once per load: a single auto-slide from slide 1 → 2,
+  // then it disarms. Any manual navigation also disarms it immediately.
+  const [armed, setArmed] = useState(true);
   const touchX = useRef<number | null>(null);
 
-  // Pause auto-advance while hovering any content slide (so it can be read/acted on).
-  const paused = hovering && index !== 0;
+  const paginate = useCallback((d: number) => {
+    setArmed(false);
+    setIndex((i) => wrap(i + d));
+  }, []);
 
-  const paginate = useCallback((d: number) => setIndex((i) => wrap(i + d)), []);
+  const goTo = useCallback((t: number) => {
+    setArmed(false);
+    setIndex(t);
+  }, []);
 
-  useEffect(() => {
-    if (reduce || paused) return;
-    const t = setTimeout(() => paginate(1), AUTOPLAY);
-    return () => clearTimeout(t);
-  }, [index, reduce, paused, paginate]);
+  // The one-time progress bar shows only while still armed on the first slide.
+  const showAutoProgress = !reduce && armed && index === 0;
 
   return (
     <section
@@ -75,15 +80,17 @@ export default function Hero() {
       {/* Faint transparent grid */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0" style={gridStyle} />
 
-      {/* Autoplay progress bar */}
-      {!reduce && (
+      {/* One-time autoplay progress bar — first slide only, until it auto-slides once */}
+      {showAutoProgress && (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-[3px] bg-border/40">
           <div
-            key={index}
-            onAnimationEnd={() => paginate(1)}
+            onAnimationEnd={() => {
+              setArmed(false);
+              setIndex(1);
+            }}
             style={{
               animation: `carousel-progress ${AUTOPLAY}ms linear forwards`,
-              animationPlayState: paused ? "paused" : "running",
+              animationPlayState: hovering ? "paused" : "running",
             }}
             className="h-full w-full origin-left bg-navy"
           />
@@ -95,7 +102,7 @@ export default function Hero() {
         {slides.map((s, i) => (
           <button
             key={s.id}
-            onClick={() => setIndex(i)}
+            onClick={() => goTo(i)}
             aria-label={`Go to ${s.label} slide`}
             aria-current={i === index}
             className={`h-2 rounded-full transition-all duration-300 ${

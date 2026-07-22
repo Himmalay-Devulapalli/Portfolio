@@ -11,11 +11,14 @@ export default function MobileNav() {
     <div className="lg:hidden">
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-bg/90 px-4 backdrop-blur">
-        <a href="#home" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy text-xs font-semibold text-white">
+        <a href="#home" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-semibold text-white">
             {profile.name.slice(0, 2).toUpperCase()}
           </span>
-          <span className="text-sm font-semibold text-ink">{profile.name}</span>
+          <span className="flex flex-col leading-tight">
+            <span className="text-sm font-semibold text-ink">{profile.name}</span>
+            <span className="text-[11px] text-ink-soft">{profile.role}</span>
+          </span>
         </a>
         <button
           aria-label={open ? "Close menu" : "Open menu"}

@@ -1,7 +1,7 @@
 // Central content source. Edit these to update the portfolio.
 
 export const profile = {
-  name: "Himmalay",
+  name: "Himmalay Devulapalli",
   role: "AI-first Product Manager",
   tagline:
     "I think in products, build like an engineer, and ship for growth.",

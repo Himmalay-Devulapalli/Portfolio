@@ -18,6 +18,7 @@ export default function Resume() {
         </div>
         <a
           href="/resume.pdf"
+          download="Himmalay_APM_Resume.pdf"
           className="inline-flex items-center justify-center rounded-xl bg-navy px-6 py-3.5 text-sm font-semibold text-white shadow-soft transition-colors hover:bg-navy-hover"
         >
           Download resume

@@ -12,10 +12,11 @@ type Props = {
   href: string;
   children: ReactNode;
   className?: string;
+  download?: boolean | string;
 };
 
 // Anchor that subtly drifts toward the cursor with spring physics.
-export default function MagneticButton({ href, children, className = "" }: Props) {
+export default function MagneticButton({ href, children, className = "", download }: Props) {
   const reduce = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -37,6 +38,7 @@ export default function MagneticButton({ href, children, className = "" }: Props
   return (
     <motion.a
       href={href}
+      download={download}
       onPointerMove={move}
       onPointerLeave={leave}
       style={{ x: sx, y: sy }}

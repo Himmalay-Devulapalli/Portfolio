@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate, motion, useInView, useReducedMotion } from "framer-motion";
-import { caseStudies, type CaseStudy } from "@/lib/data";
+import { portfolioItems, type PortfolioItem } from "@/lib/data";
 
-const n = caseStudies.length;
+const n = portfolioItems.length;
 const wrap = (i: number) => ((i % n) + n) % n;
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -14,6 +14,47 @@ const ACCENTS = [
   { tint: "bg-iris/[0.06]", ring: "ring-iris/15", bar: "bg-iris", track: "bg-iris/10" },
   { tint: "bg-sky/[0.08]", ring: "ring-sky/20", bar: "bg-sky", track: "bg-sky/15" },
 ];
+
+// Per-type display fields — same layout, different content/labels.
+function cardFields(item: PortfolioItem) {
+  if (item.kind === "project") {
+    return {
+      meta: `${item.company} · ${item.period}`,
+      lead: item.problem,
+      bulletsLabel: "Approach",
+      bullets: item.approach,
+      chipsLabel: "Technologies",
+      chips: item.stack,
+      statsLabel: "ROI",
+      cta: "View resume",
+    };
+  }
+  return {
+    meta: `${item.format} · ${item.focus}`,
+    lead: item.summary,
+    bulletsLabel: "Key takeaways",
+    bullets: item.takeaways,
+    chipsLabel: "Topics",
+    chips: item.tags,
+    statsLabel: "Results",
+    cta: "Read case study",
+  };
+}
+
+/* Type badge — visually distinguishes a project from a case study */
+function TypeTag({ kind }: { kind: PortfolioItem["kind"] }) {
+  const project = kind === "project";
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${
+        project ? "bg-navy text-white" : "bg-iris/10 text-iris ring-1 ring-inset ring-iris/25"
+      }`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${project ? "bg-emerald-400" : "bg-iris"}`} />
+      {project ? "Project" : "Case study"}
+    </span>
+  );
+}
 
 /* Count-up number, respects reduced motion */
 function CountUp({ value }: { value: string }) {
@@ -87,20 +128,28 @@ function ImpactStat({
   );
 }
 
-/* Right-half visual — real image if provided, else a styled product placeholder */
-function CaseImage({ cs }: { cs: CaseStudy }) {
-  if (cs.image) {
+/* Right-half visual — real image if provided, else a styled placeholder (tinted by type) */
+function CardVisual({ item }: { item: PortfolioItem }) {
+  if (item.image) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={cs.image} alt={cs.title} className="h-full w-full object-cover" />;
+    return <img src={item.image} alt={item.title} className="h-full w-full object-cover" />;
   }
+  const project = item.kind === "project";
+  const grad = project
+    ? "from-navy via-navy to-[#16314f]"
+    : "from-[#312b63] via-[#3b2f6e] to-[#241f47]";
+  const label = project ? item.company : item.format;
+  const accent = project ? "text-sky" : "text-[#c4b5fd]";
+  const foot = project ? "Project preview" : "Case study";
+
   return (
-    <div className="flex h-full w-full flex-col bg-gradient-to-br from-navy via-navy to-[#16314f]">
+    <div className={`flex h-full w-full flex-col bg-gradient-to-br ${grad}`}>
       {/* Faux window chrome */}
       <div className="flex items-center gap-1.5 border-b border-white/10 px-4 py-3">
         <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
         <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
         <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
-        <span className="ml-2 font-mono text-[10px] text-white/40">{cs.slug}</span>
+        <span className="ml-2 font-mono text-[10px] text-white/40">{item.slug}</span>
       </div>
       {/* Headline metric over a soft grid */}
       <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden p-6 text-center">
@@ -112,34 +161,29 @@ function CaseImage({ cs }: { cs: CaseStudy }) {
             backgroundSize: "40px 40px",
           }}
         />
-        <span className="relative text-[11px] font-semibold uppercase tracking-[0.2em] text-sky">
-          {cs.category}
+        <span className={`relative text-[11px] font-semibold uppercase tracking-[0.2em] ${accent}`}>
+          {label}
         </span>
         <span className="relative mt-3 font-display text-6xl font-bold tracking-tight text-white">
-          {cs.impact[0].value}
+          {item.impact[0].value}
         </span>
-        <span className="relative mt-1 text-sm text-white/60">{cs.impact[0].label}</span>
+        <span className="relative mt-1 text-sm text-white/60">{item.impact[0].label}</span>
       </div>
       <div className="px-4 pb-3 text-center font-mono text-[10px] uppercase tracking-widest text-white/35">
-        Product preview
+        {foot}
       </div>
     </div>
   );
 }
 
-// Flat, looping horizontal carousel. Only prev / active / next are visible;
-// all other cards sit at |offset| >= 2 with opacity 0, so the antipodal card
-// that slides across when it recycles is invisible the whole time (seamless loop).
+// Flat, looping horizontal carousel. Only prev / active / next are visible.
 function geometry(w: number) {
   const mobile = w < 640;
   const tablet = w >= 640 && w < 1024;
   const cardW = mobile ? Math.min(w * 0.92, 460) : tablet ? Math.min(w * 0.82, 720) : Math.min(w * 0.74, 1040);
-  const cardH = mobile ? 680 : tablet ? 640 : 620;
   const sideScale = mobile ? 0.82 : tablet ? 0.76 : 0.74;
-  // Main card sits in the foreground and overlaps ~3/4 of each side card, so
-  // only the outer quarter of the sisters peeks out from behind it.
   const spacing = mobile ? cardW * 0.42 : tablet ? cardW * 0.34 : cardW * 0.32;
-  return { cardW, cardH, sideScale, spacing };
+  return { cardW, sideScale, spacing };
 }
 
 export default function CaseFlow() {
@@ -147,6 +191,8 @@ export default function CaseFlow() {
   const reduce = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
   const [stageW, setStageW] = useState(0);
+  const activeRef = useRef<HTMLElement>(null);
+  const [cardH, setCardH] = useState(620); // adapts to the active card's content
 
   useLayoutEffect(() => {
     const el = stageRef.current;
@@ -157,6 +203,17 @@ export default function CaseFlow() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // Measure the active card's natural height so nothing is clipped.
+  useLayoutEffect(() => {
+    const el = activeRef.current;
+    if (!el) return;
+    const measure = () => setCardH(el.offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [index, stageW]);
 
   const go = useCallback((dir: number) => setIndex((v) => wrap(v + dir)), []);
 
@@ -176,32 +233,34 @@ export default function CaseFlow() {
       {/* Stage */}
       <div
         ref={stageRef}
-        className="relative flex items-center justify-center overflow-hidden"
-        style={{ height: g.cardH + 40 }}
+        className="relative flex items-center justify-center overflow-hidden transition-[height] duration-300 ease-out"
+        style={{ height: cardH + 40 }}
       >
         {stageW > 0 &&
-          caseStudies.map((cs, i) => {
+          portfolioItems.map((item, i) => {
             const m = wrap(i - index);
             const offset = m > n / 2 ? m - n : m;
             const abs = Math.abs(offset);
             const active = offset === 0;
             const visible = abs <= 1;
             const scale = active ? 1 : g.sideScale;
+            const f = cardFields(item);
 
             return (
               <div
-                key={cs.slug}
+                key={item.slug}
                 className="absolute left-1/2 top-1/2"
                 style={{
                   width: g.cardW,
-                  height: g.cardH,
                   zIndex: active ? 20 : 10 - abs,
                   transform: "translate(-50%, -50%)",
                   pointerEvents: visible ? "auto" : "none",
                 }}
               >
                 <motion.article
-                  className={`h-full w-full overflow-hidden rounded-3xl border bg-bg p-5 sm:p-8 ${
+                  ref={active ? activeRef : undefined}
+                  style={{ height: active ? undefined : cardH }}
+                  className={`w-full overflow-hidden rounded-3xl border bg-bg p-5 sm:p-8 ${
                     active
                       ? "cursor-grab border-navy/15 shadow-[0_30px_80px_-24px_rgba(15,27,45,0.4)] ring-1 ring-navy/10 active:cursor-grabbing"
                       : "cursor-pointer border-border shadow-soft"
@@ -225,39 +284,27 @@ export default function CaseFlow() {
                   onClick={() => !active && setIndex(i)}
                 >
                   {active ? (
-                    <div className="grid h-full gap-6 lg:grid-cols-2 lg:gap-8">
+                    <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
                       {/* Left — details */}
                       <div className="flex min-h-0 flex-col">
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-xs font-semibold uppercase tracking-wider text-navy">
-                            {cs.category}
-                          </span>
-                          <span className="text-xs text-ink-muted">{cs.company}</span>
+                          <TypeTag kind={item.kind} />
+                          <span className="text-xs text-ink-muted">{f.meta}</span>
                         </div>
 
-                        {/* Title + description */}
-                        <h3 className="mt-3 text-xl font-bold leading-snug tracking-tight text-ink sm:text-2xl">
-                          {cs.title}
+                        {/* Title + lead */}
+                        <h3 className="mt-3.5 text-xl font-bold leading-snug tracking-tight text-ink sm:text-2xl">
+                          {item.title}
                         </h3>
-                        <p className="mt-2 text-sm leading-relaxed text-ink-soft">{cs.description}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-ink-soft">{f.lead}</p>
 
-                        {/* Case Context */}
+                        {/* Approach / Key takeaways */}
                         <div className="mt-5">
                           <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-                            Case context
-                          </p>
-                          <p className="mt-1.5 line-clamp-2 text-sm leading-snug text-ink-soft">
-                            {cs.context}
-                          </p>
-                        </div>
-
-                        {/* Implementation */}
-                        <div className="mt-4">
-                          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-                            Implementation
+                            {f.bulletsLabel}
                           </p>
                           <ul className="mt-1.5 space-y-1 text-sm">
-                            {cs.built.map((b) => (
+                            {f.bullets.map((b) => (
                               <li key={b} className="flex gap-2 leading-snug text-ink-soft">
                                 <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-navy/50" />
                                 <span>{b}</span>
@@ -266,13 +313,13 @@ export default function CaseFlow() {
                           </ul>
                         </div>
 
-                        {/* Product & Tech */}
+                        {/* Technologies / Topics */}
                         <div className="mt-4">
                           <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-                            Product &amp; tech
+                            {f.chipsLabel}
                           </p>
                           <div className="mt-2 flex flex-wrap gap-1.5">
-                            {cs.stack.map((s) => (
+                            {f.chips.map((s) => (
                               <span
                                 key={s}
                                 className="rounded-md border border-border bg-surface px-2 py-1 font-mono text-[11px] font-medium text-ink"
@@ -283,13 +330,13 @@ export default function CaseFlow() {
                           </div>
                         </div>
 
-                        {/* Impact — interactive */}
-                        <div className="mt-auto pt-5">
+                        {/* ROI / Results — interactive */}
+                        <div className="mt-5">
                           <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-                            Impact
+                            {f.statsLabel}
                           </p>
                           <div className="grid grid-cols-3 gap-2.5">
-                            {cs.impact.map((mm, mi) => (
+                            {item.impact.map((mm, mi) => (
                               <ImpactStat
                                 key={mm.label}
                                 value={mm.value}
@@ -304,36 +351,38 @@ export default function CaseFlow() {
 
                         {/* Footer CTA */}
                         <a
-                          href={cs.href ?? "#case-studies"}
-                          className="group/cta mt-4 inline-flex items-center justify-center gap-1.5 rounded-xl bg-navy px-5 py-3 text-sm font-semibold text-white shadow-soft transition-colors hover:bg-navy-hover"
+                          href={item.href ?? (item.kind === "project" ? "#resume" : "#case-studies")}
+                          target={item.href?.startsWith("http") ? "_blank" : undefined}
+                          rel={item.href?.startsWith("http") ? "noreferrer noopener" : undefined}
+                          className="group/cta mt-5 inline-flex items-center justify-center gap-1.5 rounded-xl bg-navy px-5 py-3 text-sm font-semibold text-white shadow-soft transition-colors hover:bg-navy-hover"
                         >
-                          Read case study
+                          {f.cta}
                           <span className="transition-transform group-hover/cta:translate-x-0.5">→</span>
                         </a>
                       </div>
 
                       {/* Right — visual */}
                       <div className="relative hidden overflow-hidden rounded-2xl border border-border lg:block">
-                        <CaseImage cs={cs} />
+                        <CardVisual item={item} />
                       </div>
                     </div>
                   ) : (
                     /* Preview only */
                     <div className="flex h-full flex-col">
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-navy">
-                          {cs.category}
+                        <TypeTag kind={item.kind} />
+                        <span className="text-xs text-ink-muted">
+                          {item.kind === "project" ? item.company : item.format}
                         </span>
-                        <span className="text-xs text-ink-muted">{cs.company}</span>
                       </div>
-                      <h3 className="mt-3 text-lg font-bold leading-snug tracking-tight text-ink">
-                        {cs.title}
+                      <h3 className="mt-3.5 text-lg font-bold leading-snug tracking-tight text-ink">
+                        {item.title}
                       </h3>
                       <div className="mt-auto">
                         <p className="font-display text-3xl font-bold tracking-tight text-navy">
-                          {cs.impact[0].value}
+                          {item.impact[0].value}
                         </p>
-                        <p className="mt-1 text-xs text-ink-soft">{cs.impact[0].label}</p>
+                        <p className="mt-1 text-xs text-ink-soft">{item.impact[0].label}</p>
                       </div>
                     </div>
                   )}
@@ -346,7 +395,7 @@ export default function CaseFlow() {
       {/* Controls */}
       <div className="mt-8 flex items-center justify-center gap-4 sm:gap-5">
         <button
-          aria-label="Previous case study"
+          aria-label="Previous card"
           onClick={() => go(-1)}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-bg text-ink shadow-soft transition-colors hover:border-navy hover:text-navy"
         >
@@ -356,10 +405,10 @@ export default function CaseFlow() {
         </button>
 
         <div className="flex items-center gap-2">
-          {caseStudies.map((cs, i) => (
+          {portfolioItems.map((item, i) => (
             <button
-              key={cs.slug}
-              aria-label={`Go to ${cs.title}`}
+              key={item.slug}
+              aria-label={`Go to ${item.title}`}
               onClick={() => setIndex(i)}
               className={`h-2 rounded-full transition-all ${
                 i === index ? "w-6 bg-navy" : "w-2 bg-border hover:bg-ink-muted"
@@ -369,7 +418,7 @@ export default function CaseFlow() {
         </div>
 
         <button
-          aria-label="Next case study"
+          aria-label="Next card"
           onClick={() => go(1)}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-bg text-ink shadow-soft transition-colors hover:border-navy hover:text-navy"
         >

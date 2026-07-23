@@ -6,13 +6,13 @@ export const profile = {
   tagline:
     "I think in products, build like an engineer, and ship for growth.",
   location: "Remote · Global",
-  email: "himmalay@medgini.com",
+  email: "himmalaydevulapalli@gmail.com",
   available: true,
   summary:
     "Product leader with a track record of taking 0→1 bets to scale and driving measurable outcomes across B2B SaaS and consumer platforms. I obsess over the customer problem, work backward from outcomes, and align engineering, design, and GTM around a sharp, testable strategy.",
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/in/himmalaydevulapalli" },
-    { label: "Email", href: "mailto:devulapallihimmalay@gmail.com" },
+    { label: "Email", href: "mailto:himmalaydevulapalli@gmail.com" },
     { label: "GitHub", href: "https://github.com/Himmalay-Devulapalli" },
     { label: "Newsletter", href: "https://www.linkedin.com/newsletters/beyond-product-7363879095832645632/" },
   ],
@@ -55,12 +55,12 @@ export const newsletter = {
 export const openToWork = {
   status: "Open to work · Available now",
   blurb:
-    "I'm looking for Senior or Lead Product Manager roles on AI-native and B2B SaaS teams — where I can own strategy and ship 0→1. Remote or hybrid, starting immediately.",
-  targets: ["Senior / Lead PM", "AI-native · B2B SaaS", "Remote / Hybrid", "Immediate start"],
+    "I'm looking for Product Manager roles on AI-native and B2B SaaS teams — where I can own strategy and ship 0→1. Remote or hybrid, starting immediately.",
+  targets: ["Product Manager", "AI-native · B2B SaaS", "Remote / Hybrid", "Immediate start"],
   proof: [
-    { value: "$40M+", label: "ARR influenced" },
-    { value: "+38%", label: "Activation lift" },
-    { value: "4", label: "0→1 launches" },
+    { value: "3", label: "AI products shipped" },
+    { value: "75%", label: "Ops efficiency delivered" },
+    { value: "500+", label: "Newsletter subscribers" },
   ],
 };
 
@@ -68,146 +68,197 @@ export const navItems = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
   { id: "product-experience", label: "Product Experience" },
-  { id: "case-studies", label: "Case studies" },
+  { id: "case-studies", label: "Work" },
   { id: "resume", label: "Resume" },
   { id: "contact", label: "Contact" },
 ] as const;
 
 export const metrics = [
-  { value: "8+", label: "Years in product" },
-  { value: "$40M+", label: "ARR influenced" },
-  { value: "30+", label: "Features shipped" },
-  { value: "4", label: "0→1 launches" },
+  { value: "3", label: "AI products shipped" },
+  { value: "500+", label: "Newsletter subscribers" },
+  { value: "6", label: "Newsletter editions" },
+  { value: "75%", label: "Ops efficiency delivered" },
 ];
 
-export type CaseStudy = {
+export type CardMetric = { value: string; from?: string; label: string };
+
+type CardBase = {
   slug: string;
   title: string;
-  company: string; // "Work" — shown top-right
-  category: string;
-  description: string; // one-line summary under the title
-  context: string; // Case Context — how the problem was framed
-  built: string[]; // Implementation — verb-led points
-  stack: string[]; // Product & Tech used
-  impact: { value: string; from?: string; label: string }[];
+  impact: CardMetric[]; // ROI (project) / results (case study) — powers the stats + image
   href?: string;
   image?: string; // right-half visual; falls back to a styled placeholder
 };
 
-export const caseStudies: CaseStudy[] = [
+// A shipped product I built/owned.
+export type ProjectItem = CardBase & {
+  kind: "project";
+  company: string; // where I worked on it
+  period: string; // duration
+  problem: string; // the problem / idea
+  approach: string[]; // how I approached / built it
+  stack: string[]; // technologies used
+};
+
+// A written analysis — report, teardown, strategy breakdown.
+export type CaseStudyItem = CardBase & {
+  kind: "case-study";
+  format: string; // "Product Teardown", "Research Report", etc.
+  focus: string; // what it analyzes
+  summary: string; // one-line overview
+  takeaways: string[]; // key findings
+  tags: string[]; // topics
+};
+
+export type PortfolioItem = ProjectItem | CaseStudyItem;
+
+export const portfolioItems: PortfolioItem[] = [
+  // ---- Projects (Medgini) ----
   {
-    slug: "onboarding-activation",
-    title: "Rebuilding onboarding to lift activation 38%",
-    company: "B2B SaaS Platform",
-    category: "Growth · Activation",
-    description: "Reframed a leaky onboarding funnel around one aha-moment and proved it with experiments.",
-    context: "New signups churned before reaching value, and the funnel was unmeasured.",
-    built: [
-      "Interviewed 20 churned users to locate the aha-moment",
-      "Instrumented every step so drop-off was measurable",
-      "Ran 12 sequenced A/B tests against the biggest leaks",
+    kind: "project",
+    slug: "querybase",
+    title: "QueryBase — NL-to-SQL analytics & reporting platform",
+    company: "Medgini",
+    period: "2025 — Present",
+    problem:
+      "Financial teams needed insights but couldn't write SQL — every question meant a ticket to the data team.",
+    approach: [
+      "Architected the platform solo as a builder-PM — schema design through validation",
+      "Built a semantic layer mapping business language to database structure",
+      "Shipped a Gemini Flash + sqlglot engine for safe, validated SQL translation",
     ],
+    stack: ["Gemini Flash", "sqlglot", "Python", "PostgreSQL"],
     impact: [
-      { value: "38%", from: "18%", label: "Activation rate" },
-      { value: "-22%", label: "Time to value" },
-      { value: "12", label: "Experiments shipped" },
+      { value: "100+", label: "Database tables" },
+      { value: "75%", label: "Platform complete" },
+      { value: "5+", label: "Projects served" },
     ],
-    stack: ["Amplitude", "SQL", "Optimizely", "Figma"],
   },
   {
-    slug: "platform-zero-to-one",
-    title: "0→1 launch of a self-serve analytics product",
-    company: "Data Infrastructure",
-    category: "0→1 · Strategy",
-    description: "Took a self-serve analytics product from zero to GA in two quarters.",
-    context: "Enterprises wanted self-serve insights without ticketing the data team.",
-    built: [
-      "Ran 27 discovery calls to validate the wedge",
-      "Scoped and specced the MVP with eng and design",
-      "Shipped to GA with design partners as the beachhead",
+    kind: "project",
+    slug: "retail-incentive-saas",
+    title: "Retail incentive & rewards claim automation SaaS",
+    company: "Medgini",
+    period: "Dec 2024 — Present",
+    problem:
+      "Retailer incentive and cashback claims were reviewed by hand, slowing settlement across pharma clients.",
+    approach: [
+      "Translated retailer claim workflows into engineering-ready features",
+      "Designed & shipped an AI-OCR pipeline that extracts and validates invoice data",
+      "Owned delivery end-to-end and ran UAT cycles before each release",
     ],
+    stack: ["AWS", "AI-OCR", "REST APIs", "Python"],
     impact: [
-      { value: "$6M", label: "New ARR (yr 1)" },
-      { value: "27", label: "Design partners" },
-      { value: "2 qtrs", label: "Idea to GA" },
+      { value: "5+", label: "Pharma clients" },
+      { value: "90%", label: "Manual review cut" },
+      { value: "99.9%", label: "API uptime" },
     ],
-    stack: ["SQL", "Looker", "Segment", "Figma"],
   },
   {
-    slug: "pricing-packaging",
-    title: "Repackaging plans to grow expansion revenue",
-    company: "Consumer Subscription",
-    category: "Monetization",
-    description: "Restructured pricing tiers around realized value to grow expansion revenue.",
-    context: "Flat pricing was disconnected from usage, leaking expansion revenue.",
-    built: [
-      "Ran a willingness-to-pay study across 400 users",
-      "Rebuilt the tiers to map price to value",
-      "Migrated the base with grandfathering and comms",
+    kind: "project",
+    slug: "sales-statement-processing",
+    title: "Enterprise sales statement processing & analysis",
+    company: "Medgini",
+    period: "Dec 2024 — Present",
+    problem:
+      "Pharma clients needed thousands of complex, multi-format financial statements processed — manually unscalable.",
+    approach: [
+      "Defined processing needs from stakeholder requirements",
+      "Translated them into structured features with edge-case coverage",
+      "Integrated an AI-OCR pipeline into the existing analysis system",
     ],
+    stack: ["AI-OCR", "Data pipelines", "Python", "AWS"],
     impact: [
-      { value: "+19%", label: "Net revenue retention" },
-      { value: "+11%", label: "Upgrade rate" },
-      { value: "3", label: "New tiers" },
+      { value: "75%", label: "Efficiency gain" },
+      { value: "40%", label: "Resource cost cut" },
+      { value: "10k+", label: "Statements / mo" },
     ],
-    stack: ["SQL", "Stripe", "Metabase", "Maxio"],
+  },
+
+  // ---- Case studies (Beyond Product newsletter editions) ----
+  {
+    kind: "case-study",
+    slug: "pharmacy-founder-teardown",
+    title: "A 21-year-old tried to fix pharmacies — and lost",
+    format: "Failure Teardown",
+    focus: "Pharmacy software startup",
+    summary:
+      "A post-mortem on a superior pharmacy product that failed pre-launch — false validation, switching costs, and a problem that wasn't a tech problem.",
+    takeaways: [
+      "Positive survey feedback isn't commitment — 'lip service' isn't validation",
+      "Some pen-and-paper holdouts avoid digitizing on purpose (taxes)",
+      "Build bridges to legacy systems; don't force a rip-and-replace",
+    ],
+    tags: ["Discovery", "Validation", "Teardown"],
+    impact: [
+      { value: "3", label: "Fatal flaws found" },
+      { value: "3 mo", label: "Built before re-validating" },
+      { value: "0", label: "Real commitments" },
+    ],
+    href: "https://www.linkedin.com/pulse/21-year-old-founder-tried-fix-pharmacies-had-other-devulapalli-4yh5c/",
   },
   {
-    slug: "ml-recommendations",
-    title: "Shipping ML recommendations that users trust",
-    company: "Marketplace",
-    category: "AI/ML · Discovery",
-    description: "Launched a recommendation surface users actually trust — with guardrails and transparency.",
-    context: "Generic listings buried relevant inventory and hurt conversion.",
-    built: [
-      "Set trust and relevance as joint success metrics",
-      "Built guardrails and a feedback loop with data science",
-      "Launched behind an A/B holdout with a transparency UI",
+    kind: "case-study",
+    slug: "platform-risk-ryze",
+    title: "From 70% to 20% close rate — because of Claude",
+    format: "Platform Risk Analysis",
+    focus: "Ryze AI (marketing)",
+    summary:
+      "How a profitable AI marketing startup collapsed in weeks when Anthropic shipped its core feature natively — a study in platform absorption risk.",
+    takeaways: [
+      "Filling a platform's gap isn't a moat — the platform can close it",
+      "In the AI era, platform risk lands in weeks, not years",
+      "Ask if you're building a business or a soon-to-be native feature",
     ],
+    tags: ["Platform Risk", "AI Strategy", "Analysis"],
     impact: [
-      { value: "+24%", label: "Conversion" },
-      { value: "+15%", label: "Engagement" },
-      { value: "4.6/5", label: "Trust score" },
+      { value: "20%", from: "70%", label: "Close rate" },
+      { value: "$500M+", label: "Ad spend managed" },
+      { value: "23", label: "Countries served" },
     ],
-    stack: ["Python", "BigQuery", "A/B testing", "Figma"],
+    href: "https://www.linkedin.com/pulse/marketing-startup-went-from-70-close-rate-20-because-what-himmalay-vctac/",
   },
   {
-    slug: "churn-retention",
-    title: "Cutting churn with a proactive health model",
-    company: "B2B SaaS Platform",
-    category: "Retention · Data",
-    description: "Built a proactive health model so teams catch churn risk before renewal.",
-    context: "Churn surfaced only at renewal, with no shared definition of 'healthy'.",
-    built: [
-      "Modeled a health score from 9 product signals",
-      "Wired the scores into CS lifecycle plays",
-      "Tracked interventions through to renewal outcomes",
+    kind: "case-study",
+    slug: "platform-risk-auditor",
+    title: "Is your product one update away from extinction?",
+    format: "AI Tool",
+    focus: "Platform risk auditing",
+    summary:
+      "A free AI tool I built — a Claude Skill that audits any product for platform-absorption and democratization risk in about 3 minutes.",
+    takeaways: [
+      "Reads your landing page and asks 3 questions specific to your product",
+      "Scores absorption + democratization risk and names your real moat",
+      "Ends with one priority action for the next 90 days",
     ],
+    tags: ["AI Tool", "Platform Risk", "buildwithai"],
     impact: [
-      { value: "15%", from: "22%", label: "Logo churn" },
-      { value: "+14%", label: "Net retention" },
-      { value: "9", label: "Signals modeled" },
+      { value: "3 min", label: "Full audit" },
+      { value: "2", label: "Risk types scored" },
+      { value: "3", label: "Targeted questions" },
     ],
-    stack: ["SQL", "Python", "Amplitude", "Gainsight"],
+    href: "https://www.linkedin.com/posts/himmalaydevulapalli_productmanagement-ai-buildwithai-activity-7442866889019723776-bpMs",
   },
   {
-    slug: "ai-copilot",
-    title: "Launching an AI copilot that ships real work",
-    company: "Productivity Suite",
-    category: "AI/ML · 0→1",
-    description: "Shipped an LLM copilot from prototype to GA, gated on a real eval harness.",
-    context: "Copilot demos wowed but hallucinated; users wouldn't act on the output.",
-    built: [
-      "Scoped the copilot to one high-value workflow",
-      "Built an eval harness to measure quality objectively",
-      "Designed citations and undo so users could act safely",
+    kind: "case-study",
+    slug: "unit-economics-ai-features",
+    title: "Unit economics of AI features — the metric every PM should own",
+    format: "Strategy Analysis",
+    focus: "AI feature cost structure",
+    summary:
+      "Why inference cost belongs on the PM's dashboard next to churn and activation — after a silent model swap tripled our cost per invoice.",
+    takeaways: [
+      "A silent model upgrade tripled cost per invoice — PMs must watch inference cost",
+      "Track the Inference-to-Value (I2V) ratio, not state-of-the-art benchmarks",
+      "Defensibility comes from data loops and workflow depth, not the best model",
     ],
+    tags: ["Unit Economics", "AI Strategy", "Analysis"],
     impact: [
-      { value: "63%", label: "Weekly active use" },
-      { value: "+28%", label: "Task completion" },
-      { value: "4.5/5", label: "Trust score" },
+      { value: "3x", label: "Cost per invoice jump" },
+      { value: "300%", label: "Cost for +5% accuracy" },
+      { value: "30%", label: "Cost at 98% of value" },
     ],
-    stack: ["LLM APIs", "Python", "RAG", "Evals", "LangSmith"],
+    href: "https://www.linkedin.com/pulse/unit-economics-ai-feature-metric-every-pm-should-own-why-devulapalli-yqgle/",
   },
 ];
 

@@ -6,7 +6,7 @@ import SectionEyebrow from "@/components/ui/SectionEyebrow";
 export default function Contact() {
   return (
     <section id="contact" className="border-t border-border pb-20 pt-10 sm:pb-28 sm:pt-12">
-      <div className="w-full max-w-5xl px-6 sm:px-10 lg:px-14">
+      <div className="w-full px-6 sm:px-10 lg:px-14">
         <Reveal className="group/contact rounded-3xl border border-border bg-navy px-6 py-14 text-center shadow-soft sm:px-12">
           <div className="mx-auto mb-8 max-w-md">
             <SectionEyebrow label="Contact" index="05" tone="light" />

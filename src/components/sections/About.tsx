@@ -19,9 +19,9 @@ const focus = [
 const stack = ["SQL", "Python", "LLM APIs", "RAG & evals", "A/B testing", "Amplitude"];
 
 const stats = [
-  { value: "$40M+", label: "ARR influenced" },
-  { value: "8+", label: "Years in product" },
-  { value: "4", label: "0→1 launches" },
+  { value: "3", label: "AI products shipped" },
+  { value: "6", label: "Newsletter editions" },
+  { value: "500+", label: "Newsletter subscribers" },
 ];
 
 const ease = [0.23, 1, 0.32, 1] as const;
@@ -209,7 +209,7 @@ export default function About() {
             </motion.a>
             <a
               href="#contact"
-              className="group inline-flex items-center gap-1.5 text-sm font-semibold text-ink transition-colors hover:text-navy"
+              className="group inline-flex items-center gap-1.5 rounded-xl border border-ink/15 px-6 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-navy hover:text-navy"
             >
               Get in touch
               <span className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -220,7 +220,7 @@ export default function About() {
         {/* Assistant */}
         <ChatCard
           delay={0.08}
-          className="min-h-[380px] shadow-soft ring-1 ring-navy/[0.06] sm:max-lg:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-span-2 lg:row-start-1"
+          className="h-[440px] shadow-soft ring-1 ring-navy/[0.06] sm:max-lg:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:h-auto lg:min-h-[380px]"
         />
 
         {/* Skills */}

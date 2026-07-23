@@ -6,13 +6,13 @@ export const profile = {
   tagline:
     "I think in products, build like an engineer, and ship for growth.",
   location: "Remote · Global",
-  email: "himmalaydevulapalli@gmail.com",
+  email: "devulapallihimmalay@gmail.com",
   available: true,
   summary:
     "Product leader with a track record of taking 0→1 bets to scale and driving measurable outcomes across B2B SaaS and consumer platforms. I obsess over the customer problem, work backward from outcomes, and align engineering, design, and GTM around a sharp, testable strategy.",
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/in/himmalaydevulapalli" },
-    { label: "Email", href: "mailto:himmalaydevulapalli@gmail.com" },
+    { label: "Email", href: "mailto:devulapallihimmalay@gmail.com" },
     { label: "GitHub", href: "https://github.com/Himmalay-Devulapalli" },
     { label: "Newsletter", href: "https://www.linkedin.com/newsletters/beyond-product-7363879095832645632/" },
   ],

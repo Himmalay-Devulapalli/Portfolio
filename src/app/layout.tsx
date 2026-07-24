@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { profile } from "@/lib/data";
 import Sidebar from "@/components/layout/Sidebar";
@@ -39,6 +40,7 @@ export default function RootLayout({
         <main className="min-w-0 flex-1 pt-14 lg:pt-0">
           {children}
         </main>
+        <Analytics />
       </body>
     </html>
   );
